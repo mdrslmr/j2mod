@@ -15,6 +15,11 @@
  */
 package com.ghgande.j2mod.modbus.io;
 
+import java.io.IOException;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.ghgande.j2mod.modbus.Modbus;
 import com.ghgande.j2mod.modbus.ModbusIOException;
 import com.ghgande.j2mod.modbus.msg.ModbusMessage;
@@ -22,10 +27,6 @@ import com.ghgande.j2mod.modbus.msg.ModbusRequest;
 import com.ghgande.j2mod.modbus.msg.ModbusResponse;
 import com.ghgande.j2mod.modbus.net.AbstractModbusListener;
 import com.ghgande.j2mod.modbus.util.ModbusUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.io.IOException;
 
 /**
  * Class that implements the ModbusRTU transport flavor.
@@ -340,7 +341,7 @@ public class ModbusRTUTransport extends ModbusSerialTransport {
         catch (IOException ex) {
             // An exception mostly means there is no request. The master should
             // retry the request.
-            return null;
+            throw new ModbusIOException(ex.getMessage());
         }
     }
 

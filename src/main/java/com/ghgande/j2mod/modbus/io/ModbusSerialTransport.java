@@ -15,6 +15,14 @@
  */
 package com.ghgande.j2mod.modbus.io;
 
+import java.io.IOException;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.fazecast.jSerialComm.SerialPort;
 import com.ghgande.j2mod.modbus.ModbusIOException;
 import com.ghgande.j2mod.modbus.msg.ModbusMessage;
@@ -23,13 +31,6 @@ import com.ghgande.j2mod.modbus.msg.ModbusResponse;
 import com.ghgande.j2mod.modbus.net.AbstractModbusListener;
 import com.ghgande.j2mod.modbus.net.AbstractSerialConnection;
 import com.ghgande.j2mod.modbus.util.ModbusUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.io.IOException;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  * Abstract base class for serial <tt>ModbusTransport</tt>
@@ -139,7 +140,11 @@ public abstract class ModbusSerialTransport extends AbstractModbusTransport {
     public void setTimeout(int time) {
         super.setTimeout(time);
         if (commPort != null) {
-            commPort.setComPortTimeouts(AbstractSerialConnection.TIMEOUT_READ_BLOCKING, timeout, 0);
+            commPort.setComPortTimeouts(
+            SerialPort.TIMEOUT_READ_SEMI_BLOCKING|
+            SerialPort.TIMEOUT_WRITE_SEMI_BLOCKING,
+            time,
+            time);
         }
     }
 
