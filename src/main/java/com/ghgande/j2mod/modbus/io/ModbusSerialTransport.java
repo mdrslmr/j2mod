@@ -58,6 +58,9 @@ public abstract class ModbusSerialTransport extends AbstractModbusTransport {
     protected boolean echo = false;     // require RS-485 echo processing
     private final Set<AbstractSerialTransportListener> listeners = Collections.synchronizedSet(new HashSet<AbstractSerialTransportListener>());
 
+    // buffer used temporarily
+    private final byte[] bb = new byte[512];
+
     /**
      * Creates a new transaction suitable for the serial port
      *
@@ -381,7 +384,6 @@ public abstract class ModbusSerialTransport extends AbstractModbusTransport {
      */
     protected void readBytes(byte[] buffer, long bytesToRead) throws IOException {
         if (commPort != null && commPort.isOpen()) {
-            byte[] bb = new byte[(int)bytesToRead];
             int loopCount=0;
             long remaining = bytesToRead;
 
