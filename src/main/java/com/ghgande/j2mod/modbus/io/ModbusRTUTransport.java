@@ -125,12 +125,12 @@ public class ModbusRTUTransport extends ModbusSerialTransport {
                         break;
 
                     default:
-                        throw new IOException(String.format("getResponse unrecognised function code [%s]", function));
+                        throw new IOException(String.format("getRequest unrecognised function code [%s]", function));
                 }
             }
         }
         catch (IOException e) {
-            throw new IOException("getResponse serial port exception");
+            throw new IOException("getRequest serial port exception");
         }
     }
 
@@ -310,7 +310,7 @@ public class ModbusRTUTransport extends ModbusSerialTransport {
                          */
                         getRequest(fc, byteInputOutputStream);
                         dlength = byteInputOutputStream.size() - 2; // less the crc
-                        logger.debug("Response: {}", ModbusUtil.toHex(byteInputOutputStream.getBuffer(), 0, dlength + 2));
+                        logger.debug("Request: {}", ModbusUtil.toHex(byteInputOutputStream.getBuffer(), 0, dlength + 2));
 
                         byteInputStream.reset(inBuffer, dlength);
 
@@ -327,7 +327,7 @@ public class ModbusRTUTransport extends ModbusSerialTransport {
                         }
                     }
                     else {
-                        throw new IOException("Error reading response");
+                        throw new IOException("Error reading request");
                     }
 
                     // read response
