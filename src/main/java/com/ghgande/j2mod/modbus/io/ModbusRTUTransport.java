@@ -292,6 +292,7 @@ public class ModbusRTUTransport extends ModbusSerialTransport {
                     int uid = readByte();
                     if (uid != -1) {
                         int fc = readByte();
+
                         byteInputOutputStream.reset();
                         byteInputOutputStream.writeByte(uid);
                         byteInputOutputStream.writeByte(fc);
@@ -341,7 +342,7 @@ public class ModbusRTUTransport extends ModbusSerialTransport {
         catch (IOException ex) {
             // An exception mostly means there is no request. The master should
             // retry the request.
-            throw new ModbusIOException(ex.getMessage());
+            return null;
         }
     }
 

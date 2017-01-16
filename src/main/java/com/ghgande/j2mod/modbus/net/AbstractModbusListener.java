@@ -15,6 +15,11 @@
  */
 package com.ghgande.j2mod.modbus.net;
 
+import java.net.InetAddress;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.ghgande.j2mod.modbus.Modbus;
 import com.ghgande.j2mod.modbus.ModbusCoupler;
 import com.ghgande.j2mod.modbus.ModbusIOException;
@@ -24,10 +29,6 @@ import com.ghgande.j2mod.modbus.msg.ModbusResponse;
 import com.ghgande.j2mod.modbus.procimg.ProcessImage;
 import com.ghgande.j2mod.modbus.slave.ModbusSlave;
 import com.ghgande.j2mod.modbus.slave.ModbusSlaveFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.net.InetAddress;
 
 /**
  * Definition of a listener class
@@ -153,23 +154,27 @@ public abstract class AbstractModbusListener implements Runnable {
         // Get the request from the transport. It will be processed
         // using an associated process image.
         ModbusRequest request = transport.readRequest(listener);
-        ModbusResponse response;
+        if (request == null) {
+            logger.debug("stop handle request, no request");
+        } else {
+            ModbusResponse response;
 
-        // Test if Process image exists and has a correct unit ID
-        ProcessImage spi = getProcessImage(request.getUnitID());
-        if (spi == null || (spi.getUnitID() != 0 && request.getUnitID() != spi.getUnitID())) {
-            response = request.createExceptionResponse(Modbus.ILLEGAL_ADDRESS_EXCEPTION);
-        }
-        else {
-            response = request.createResponse(this);
-        }
-        if (logger.isDebugEnabled()) {
-            logger.debug("Request:{}", request.getHexMessage());
-            logger.debug("Response:{}", response.getHexMessage());
-        }
+            // Test if Process image exists and has a correct unit ID
+            ProcessImage spi = getProcessImage(request.getUnitID());
+            if (spi == null || (spi.getUnitID() != 0 && request.getUnitID() != spi.getUnitID())) {
+                response = request.createExceptionResponse(Modbus.ILLEGAL_ADDRESS_EXCEPTION);
+            }
+            else {
+                response = request.createResponse(this);
+            }
+            if (logger.isDebugEnabled()) {
+                logger.debug("Request:{}", request.getHexMessage());
+                logger.debug("Response:{}", response.getHexMessage());
+            }
 
-        // Write the response
-        transport.writeMessage(response);
+            // Write the response
+            transport.writeMessage(response);
+        }
     }
 
     /**

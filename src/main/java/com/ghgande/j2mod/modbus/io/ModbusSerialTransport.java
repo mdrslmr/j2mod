@@ -111,6 +111,10 @@ public abstract class ModbusSerialTransport extends AbstractModbusTransport {
         open();
         notifyListenersBeforeRequest();
         ModbusRequest req = readRequestIn(listener);
+        if (req == null) {
+            logger.debug("no request retrived");
+            return null;
+        }
         notifyListenersAfterRequest(req);
         return req;
     }
@@ -141,10 +145,10 @@ public abstract class ModbusSerialTransport extends AbstractModbusTransport {
         super.setTimeout(time);
         if (commPort != null) {
             commPort.setComPortTimeouts(
-            SerialPort.TIMEOUT_READ_SEMI_BLOCKING|
-            SerialPort.TIMEOUT_WRITE_SEMI_BLOCKING,
-            time,
-            time);
+                    SerialPort.TIMEOUT_READ_SEMI_BLOCKING|
+                    SerialPort.TIMEOUT_WRITE_SEMI_BLOCKING,
+                    time,
+                    time);
         }
     }
 
@@ -377,8 +381,20 @@ public abstract class ModbusSerialTransport extends AbstractModbusTransport {
      */
     protected void readBytes(byte[] buffer, long bytesToRead) throws IOException {
         if (commPort != null && commPort.isOpen()) {
-            int cnt = commPort.readBytes(buffer, bytesToRead);
-            if (cnt != bytesToRead) {
+            byte[] bb = new byte[(int)bytesToRead];
+            int loopCount=0;
+            long remaining = bytesToRead;
+
+            int read = 0;
+            while (remaining > 0 && loopCount++ < 5) {
+                int readCount = commPort.readBytes(bb, remaining);
+                for (int i=0; i<readCount; i++) {
+                    buffer[read+i]=bb[i];
+                }
+                read+=readCount;
+                remaining-=readCount;
+            }
+            if (read != bytesToRead) {
                 throw new IOException("Cannot read from serial port - truncated");
             }
         }

@@ -15,12 +15,6 @@
  */
 package com.ghgande.j2mod.modbus.slave;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.ghgande.j2mod.modbus.ModbusException;
 import com.ghgande.j2mod.modbus.net.AbstractModbusListener;
 import com.ghgande.j2mod.modbus.net.ModbusSerialListener;
@@ -28,6 +22,11 @@ import com.ghgande.j2mod.modbus.net.ModbusTCPListener;
 import com.ghgande.j2mod.modbus.net.ModbusUDPListener;
 import com.ghgande.j2mod.modbus.procimg.ProcessImage;
 import com.ghgande.j2mod.modbus.util.SerialParameters;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Class that implements a wrapper around a Slave Listener
@@ -78,7 +77,6 @@ public class ModbusSlave {
      */
     protected ModbusSlave(SerialParameters serialParams) throws ModbusException {
         this(ModbusSlaveType.SERIAL, 0, 0, serialParams, false);
-        listener.setTimeout(250);
     }
 
     /**
